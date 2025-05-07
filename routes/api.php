@@ -23,6 +23,7 @@ Route::prefix('v1')->group(function () {
 
     Route::get('/items', [ItemController::class, 'index']);
     Route::post('/items', [ItemController::class, 'store'])->middleware(JsonFormat::class);
+    Route::put('/items/{item}', [ItemController::class, 'update'])->middleware(JsonFormat::class);
 
     //Route::post('/items/import', [ImportController::class, 'import'])->middleware(JsonFormat::class);;
     Route::post('/items/import/preview', [ImportController::class, 'preview'])->middleware(JsonFormat::class);
