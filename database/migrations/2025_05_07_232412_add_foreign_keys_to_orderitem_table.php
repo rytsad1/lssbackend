@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('orderitem', function (Blueprint $table) {
             $table->foreign(['fkOrderid_Order'], 'orderitem_ibfk_1')->references(['id_Order'])->on('order')->onUpdate('restrict')->onDelete('restrict');
+            $table->foreign(['fkItemid_Item'], 'orderitem_ibfk_item')->references(['id_Item'])->on('item')->onUpdate('restrict')->onDelete('restrict');
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('orderitem', function (Blueprint $table) {
             $table->dropForeign('orderitem_ibfk_1');
+            $table->dropForeign('orderitem_ibfk_item');
         });
     }
 };

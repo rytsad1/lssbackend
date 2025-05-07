@@ -18,6 +18,8 @@ return new class extends Migration
             $table->integer('id_Order', true);
             $table->integer('fkOrderHistoryid_OrderHistory')->nullable()->unique('fkorderhistoryid_orderhistory');
             $table->integer('fkUserid_User')->nullable()->index('fkuserid_user');
+            $table->integer('fkOrderTypeid_OrderType')->index('order_ibfk_type');
+            $table->integer('fkOrderStatusid_OrderStatus')->index('order_ibfk_status');
         });
     }
 

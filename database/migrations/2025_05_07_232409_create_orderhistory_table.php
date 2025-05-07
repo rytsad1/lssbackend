@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::create('orderhistory', function (Blueprint $table) {
             $table->date('Date')->nullable();
             $table->integer('id_OrderHistory', true);
+            $table->integer('fkOrderid_Order')->index('orderhistory_ibfk_order');
+            $table->integer('PerformedByUserid')->nullable()->index('orderhistory_ibfk_user');
+            $table->string('Action', 100)->nullable();
+            $table->text('Comment')->nullable();
         });
     }
 

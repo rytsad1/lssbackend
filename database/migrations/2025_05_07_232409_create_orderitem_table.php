@@ -15,6 +15,9 @@ return new class extends Migration
             $table->integer('Quantity');
             $table->integer('id_OrderItem', true);
             $table->integer('fkOrderid_Order')->nullable()->index('fkorderid_order');
+            $table->integer('fkItemid_Item')->index('orderitem_ibfk_item');
+            $table->integer('ReturnedQuantity')->nullable()->default(0);
+            $table->text('WriteOffReason')->nullable();
         });
     }
 
