@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\WriteOffController;
 use App\Http\Middleware\JsonFormat;
 
 
@@ -28,6 +29,11 @@ Route::prefix('v1')->group(function () {
     //Route::post('/items/import', [ImportController::class, 'import'])->middleware(JsonFormat::class);;
     Route::post('/items/import/preview', [ImportController::class, 'preview'])->middleware(JsonFormat::class);
     Route::post('/items/import/confirm', [ImportController::class, 'confirm'])->middleware(JsonFormat::class);
+
+
+    Route::post('/items/writeoff/preview', [WriteOffController::class, 'preview'])->middleware(JsonFormat::class);;
+    Route::post('/items/writeoff/confirm', [WriteOffController::class, 'confirm'])->middleware(JsonFormat::class);; // Galutiniam veiksmui
+
 
 
 
