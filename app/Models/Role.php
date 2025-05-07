@@ -21,4 +21,16 @@ class Role extends Model
 
     public $timestamps = false;
     public $incrementing = true;
+
+    public function userRoles()
+    {
+        return $this->hasMany(UserRole::class, 'fkRoleid_Role');
+    }
+
+    public function rolePermissions()
+    {
+        return $this->hasMany(RolePremission::class, 'fkRoleid_Role');
+    }
+
 }
+

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Resources\PremissionResource;
+use App\Models\Premission;
 
 class PremissionController extends Controller
 {
@@ -11,7 +13,7 @@ class PremissionController extends Controller
      */
     public function index()
     {
-        //
+        return PremissionResource::collection(Premission::all());
     }
 
     /**

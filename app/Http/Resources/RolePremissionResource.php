@@ -13,6 +13,8 @@ class RolePremissionResource extends JsonResource
     {
         return [
             'id_RolePremission' => $this->id_RolePremission,
+            'fk_Role'=>$this->fk_Role,
+            'fk_Permission'=>$this->fk_Permission,
         ];
     }
 }

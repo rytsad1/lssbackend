@@ -40,9 +40,47 @@ class UserController extends Controller
         return response(new UserResource($user), 201);
     }
 
+    public function store(CreateRequest $request)
+    {
+        $data = $request->all(); // paimk duomenis PO hash'inimo
+
+        $data['State'] = $request->input('State', 1);
+        $user = User::create($data);
+
+        // Priskiriama rolė ir teisės, jei pateikta
+        if ($request->has('role_id')) {
+            $userRole = $user->userRoles()->create(['fkRoleid_Role' => $request->role_id]);
+
+            if ($request->has('permissions')) {
+                foreach ($request->permissions as $permissionId) {
+                    $userRole->role->rolePermissions()->create(['fkPermissionid_Premission' => $permissionId]);
+                }
+            }
+        }
+
+        return response(new UserResource($user), 201);
+    }
+
+
     public function update(UpdateRequest $request, User $user)
     {
         $user->update($request->validated());
+
+        // Jei pateikta nauja rolė – pašalinti seną ir priskirti naują
+        if ($request->has('role_id')) {
+            $user->userRoles()->delete();
+            $userRole = $user->userRoles()->create(['fkRoleid_Role' => $request->role_id]);
+
+            // Perrašom teises
+            $userRole->role->rolePermissions()->delete();
+
+            if ($request->has('permissions')) {
+                foreach ($request->permissions as $permissionId) {
+                    $userRole->role->rolePermissions()->create(['fkPermissionid_Premission' => $permissionId]);
+                }
+            }
+        }
+
         return response(new UserResource($user), 200);
     }
 
@@ -122,5 +160,34 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return response(['message' => $e->getMessage()], 500);
         }
+    }
+    public function permissions(User $user)
+    {
+        $permissions = $user->userRoles
+            ->flatMap(fn($ur) => $ur->role->rolePermissions->pluck('permission'))
+            ->unique('id_Premission')
+            ->values();
+
+        return response()->json($permissions);
+    }
+
+    public function assignRole(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'role_id' => 'required|exists:role,id_Role'
+        ]);
+
+        $user->userRoles()->create(['fkRoleid_Role' => $validated['role_id']]);
+        return response()->json(['message' => 'Rolė priskirta']);
+    }
+
+    public function removeRole(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'role_id' => 'required|exists:role,id_Role'
+        ]);
+
+        $user->userRoles()->where('fkRoleid_Role', $validated['role_id'])->delete();
+        return response()->json(['message' => 'Rolė pašalinta']);
     }
 }

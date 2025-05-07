@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('userrole', function (Blueprint $table) {
             $table->integer('id_UserRole', true);
             $table->integer('fkUserid_User')->nullable()->index('fkuserid_user');
+            $table->integer('fkRoleid_Role')->nullable()->index('fk_userrole_role');
         });
     }
 

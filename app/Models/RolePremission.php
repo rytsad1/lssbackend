@@ -11,8 +11,22 @@ class RolePremission extends Model
 
     protected $primaryKey = 'id_RolePremission';
     protected $table = 'rolepremission';
+
     public $timestamps = false;
     public $incrementing = true;
 
-    protected $fillable = [];
+    protected $fillable = [
+        'fk_Role',
+        'fk_Permission'
+    ];
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'fkRoleid_Role');
+    }
+
+    public function permission()
+    {
+        return $this->belongsTo(Premission::class, 'fkPremissionid_Premission');
+    }
 }

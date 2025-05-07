@@ -26,12 +26,12 @@ class CreateRequest extends FormRequest
                 'required',
                 'string',
                 'confirmed', // Reikalaus ir `Password_confirmation` lauko
-                Password::min(8)
-                    ->mixedCase()
-                    ->numbers()
-                    ->symbols()
-                    ->uncompromised()
+                Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised()
             ],
+            'role_id' => ['nullable', 'exists:role,id_Role'],
+            'permissions' => ['nullable', 'array'],
+            'permissions.*' => ['integer', 'exists:premission,id_Premission'],
+            'State' => ['nullable', 'integer'],
         ];
     }
 
@@ -57,9 +57,9 @@ class CreateRequest extends FormRequest
 
     protected function passedValidation(): void
     {
-        $password = $this->Password;
-        $data = $this->only(array_keys($this->rules()));
-        $data['Password'] = Hash::make($password);
+        $data = $this->all();
+        $data['Password'] = Hash::make($data['Password']);
         $this->replace($data);
     }
+
 }

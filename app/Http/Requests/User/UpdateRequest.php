@@ -31,6 +31,9 @@ class UpdateRequest extends FormRequest
             'State' => ['sometimes', 'integer'],
             'fkOrderHistoryid_OrderHistory' => ['sometimes', 'integer'],
             'fkBillOfLadingid_BillOfLading' => ['sometimes', 'integer'],
+            'role_id' => ['nullable|exists:role,id_Role'],
+            'permissions' => ['nullable|array'],
+            'permissions.*' => ['integer|exists:premission,id_Premission'],
         ];
     }
 

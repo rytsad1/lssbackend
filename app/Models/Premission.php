@@ -21,8 +21,8 @@ class Premission extends Model
     public $timestamps = false;
     public $incrementing = true;
 
-    public function rolePremission()
+    public function rolePermissions()
     {
-        return $this->belongsTo(RolePremission::class, 'fkRolePremissionid_RolePremission');
+        return $this->hasMany(RolePremission::class, 'fkPremissionid_Premission');
     }
 }

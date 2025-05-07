@@ -58,4 +58,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(State::class, 'State', 'id_State');
     }
 
+
+    public function hasPermission(string $key): bool
+    {
+        return $this->userRoles
+                ->flatMap(fn($role) => $role->role->rolePermissions)
+                ->pluck('permission.key')
+                ->contains($key) || $this->hasPermission('everything');
+    }
+
+
 }

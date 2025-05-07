@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('rolepremission', function (Blueprint $table) {
             $table->integer('id_RolePremission', true);
+            $table->integer('fk_Role')->nullable()->index('fk_rolepermission_role');
+            $table->integer('fk_Permission')->nullable()->index('fk_rolepermission_permission');
         });
     }
 
