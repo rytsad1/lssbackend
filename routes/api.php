@@ -15,6 +15,8 @@ use App\Http\Controllers\OrderHistoryController;
 use App\Http\Middleware\JsonFormat;
 
 
+
+
 Route::prefix('v1')->group(function () {
     Route::post('/register', [UserController::class, 'register'])->middleware(JsonFormat::class);
     //Route::post('/login', [UserController::class, 'login'])->middleware(JsonFormat::class);
@@ -54,6 +56,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/ordertypes', [OrderTypeController::class, 'index'])->middleware([JsonFormat::class]);
 
         Route::get('/orderhistory', [OrderHistoryController::class, 'index'])->middleware([JsonFormat::class]);
+
+
+
 
     });
 });
