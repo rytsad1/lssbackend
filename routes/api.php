@@ -9,6 +9,9 @@ use App\Http\Controllers\WriteOffController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PremissionController;
 use App\Http\Controllers\UserRoleController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderTypeController;
+use App\Http\Controllers\OrderHistoryController;
 use App\Http\Middleware\JsonFormat;
 
 
@@ -46,7 +49,11 @@ Route::prefix('v1')->group(function () {
         Route::put('/user-roles/{userRole}', [UserRoleController::class, 'update']);
         Route::delete('/user-roles/{userRole}', [UserRoleController::class, 'destroy']);
 
+        Route::post('/orders/full', [OrderController::class, 'createFullOrder'])->middleware([JsonFormat::class]);
+        Route::get('/orders', [OrderController::class, 'index'])->middleware([JsonFormat::class]);
+        Route::get('/ordertypes', [OrderTypeController::class, 'index'])->middleware([JsonFormat::class]);
 
+        Route::get('/orderhistory', [OrderHistoryController::class, 'index'])->middleware([JsonFormat::class]);
 
     });
 });

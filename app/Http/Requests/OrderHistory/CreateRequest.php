@@ -15,6 +15,10 @@ class CreateRequest extends FormRequest
     {
         return [
             'Date' => ['required', 'date'],
+            'fkOrderid_Order' => ['required', 'exists:order,id_Order'],
+            'PerformedByUserid' => ['required', 'exists:user,id_User'],
+            'Action' => ['required', 'string', 'max:100'],
+            'Comment' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

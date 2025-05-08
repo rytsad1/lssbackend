@@ -14,11 +14,12 @@ class UserResource extends JsonResource
         return [
             "id_User" => $this->id_User,
             "Name" => $this->Name,
+            "Surname" => $this->Surname,
             "Email" => $this->Email,
             "Username" => $this->Username,
             "State" => $this->State,
-            "fkOrderHistoryid_OrderHistory" => $this->fkOrderHistoryid_OrderHistory,
-            "fkBillOfLadingid_BillOfLading" => $this->fkBillOfLadingid_BillOfLading,
+//            "fkOrderHistoryid_OrderHistory" => $this->fkOrderHistoryid_OrderHistory,
+//            "fkBillOfLadingid_BillOfLading" => $this->fkBillOfLadingid_BillOfLading,
 
         ];
     }

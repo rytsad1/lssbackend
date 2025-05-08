@@ -12,7 +12,9 @@ class OrderHistoryController extends Controller
 {
     public function index()
     {
-        return OrderHistoryResource::collection(OrderHistory::all());
+        return OrderHistoryResource::collection(
+            OrderHistory::with(['order.orderItems.item', 'order.user', 'order.orderType', 'performedBy'])->get()
+        );
     }
 
     public function store(CreateRequest $request)
@@ -23,6 +25,13 @@ class OrderHistoryController extends Controller
 
     public function show(OrderHistory $orderHistory)
     {
+        $orderHistory->load([
+            'order.orderItems.item',
+            'order.user',
+            'order.orderType',
+            'performedBy',
+        ]);
+
         return new OrderHistoryResource($orderHistory);
     }
 

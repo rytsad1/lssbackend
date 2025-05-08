@@ -15,6 +15,9 @@ class OrderItem extends Model
     protected $fillable = [
         'Quantity',
         'fkOrderid_Order',
+        'fkItemid_Item',
+        'ReturnedQuantity',
+        'WriteOffReason'
     ];
 
     public $timestamps = false;
@@ -23,5 +26,10 @@ class OrderItem extends Model
     public function order()
     {
         return $this->belongsTo(Order::class, 'fkOrderid_Order', 'id_Order');
+    }
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class, 'fkItemid_Item', 'id_Item');
     }
 }

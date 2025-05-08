@@ -16,8 +16,23 @@ class OrderResource extends JsonResource
             'Date' => $this->Date,
             'State' => $this->State,
             'Type' => $this->Type,
+            'OrderType' => $this->orderType?->name,
+            'User' => [
+                'id_User' => $this->user?->id_User,
+                'Name' => $this->user?->Name,
+                'Surname' => $this->user?->Surname,
+                'Email' => $this->user?->Email,
+            ],
+            'OrderItems' => $this->orderItems->map(function ($item) {
+                return [
+                    'id_Item' => $item->fkItemid_Item,
+                    'Name' => $item->item?->Name,
+                    'InventoryNumber' => $item->item?->InventoryNumber,
+                    'Quantity' => $item->Quantity,
+                ];
+            }),
+            'OrderStatus' => $this->orderStatus?->name,
             'fkOrderHistoryid_OrderHistory' => $this->fkOrderHistoryid_OrderHistory,
-            'fkUserid_User' => $this->fkUserid_User,
         ];
     }
 }

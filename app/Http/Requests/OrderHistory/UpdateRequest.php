@@ -15,6 +15,10 @@ class UpdateRequest extends FormRequest
     {
         return [
             'Date' => ['sometimes', 'date'],
+            'fkOrderid_Order' => ['sometimes', 'exists:order,id_Order'],
+            'PerformedByUserid' => ['sometimes', 'exists:user,id_User'],
+            'Action' => ['sometimes', 'string', 'max:100'],
+            'Comment' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

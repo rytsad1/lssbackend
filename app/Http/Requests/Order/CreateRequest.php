@@ -19,6 +19,8 @@ class CreateRequest extends FormRequest
             'Type' => ['required', 'integer'],
             'fkOrderHistoryid_OrderHistory' => ['required', 'integer'],
             'fkUserid_User' => ['required', 'integer'],
+            'fkOrderTypeid_OrderType' => ['required', 'integer'],
+            'fkOrderStatusid_OrderStatus' => ['required', 'integer'],
         ];
     }
 }

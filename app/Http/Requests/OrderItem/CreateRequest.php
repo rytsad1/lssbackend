@@ -16,6 +16,9 @@ class CreateRequest extends FormRequest
         return [
             'Quantity' => ['required', 'integer', 'min:1'],
             'fkOrderid_Order' => ['required', 'integer', 'exists:order,id_Order'],
+            'fkItemid_Item' => ['required', 'integer', 'exists:item,id_Item'],
+            'ReturnedQuantity' => ['nullable', 'integer', 'min:0'],
+            'WriteOffReason' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

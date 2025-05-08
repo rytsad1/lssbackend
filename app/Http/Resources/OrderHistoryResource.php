@@ -14,6 +14,10 @@ class OrderHistoryResource extends JsonResource
         return [
             'id_OrderHistory' => $this->id_OrderHistory,
             'Date' => $this->Date,
+            'Action' => $this->Action,
+            'Comment' => $this->Comment,
+            'order' => new OrderResource($this->whenLoaded('order')),
+            'performed_by' => new UserResource($this->whenLoaded('performedBy')),
         ];
     }
 }

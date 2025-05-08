@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('order', function (Blueprint $table) {
             $table->date('Date')->nullable();
             $table->integer('State')->index('state');
-            $table->integer('Type')->index('type');
+            $table->integer('Type')->nullable()->index('type');
             $table->integer('id_Order', true);
             $table->integer('fkOrderHistoryid_OrderHistory')->nullable()->unique('fkorderhistoryid_orderhistory');
             $table->integer('fkUserid_User')->nullable()->index('fkuserid_user');

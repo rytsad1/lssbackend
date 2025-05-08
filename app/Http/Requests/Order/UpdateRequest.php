@@ -19,6 +19,8 @@ class UpdateRequest extends FormRequest
             'Type' => ['sometimes', 'integer'],
             'fkOrderHistoryid_OrderHistory' => ['sometimes', 'integer'],
             'fkUserid_User' => ['sometimes', 'integer'],
+            'fkOrderTypeid_OrderType' => ['sometimes', 'integer'],
+            'fkOrderStatusid_OrderStatus' => ['sometimes', 'integer'],
         ];
     }
 }

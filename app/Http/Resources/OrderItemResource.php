@@ -14,7 +14,10 @@ class OrderItemResource extends JsonResource
         return [
             'id_OrderItem' => $this->id_OrderItem,
             'Quantity' => $this->Quantity,
+            'ReturnedQuantity' => $this->ReturnedQuantity,
+            'WriteOffReason' => $this->WriteOffReason,
             'fkOrderid_Order' => $this->fkOrderid_Order,
+            'fkItemid_Item' => $this->fkItemid_Item,
         ];
     }
 }
