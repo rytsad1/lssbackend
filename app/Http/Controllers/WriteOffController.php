@@ -74,7 +74,7 @@ class WriteOffController extends Controller
             $currentRow++;
         }
 
-        $fileName = now()->format('Y-m-d') . ' Nurasymo aktas.xlsx';
+        $fileName = now()->format('Y-m-d') . '_Nurasymo_aktas.xlsx';
         $filePath = storage_path("app/public/{$fileName}");
 
         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
