@@ -81,7 +81,9 @@ class WriteOffController extends Controller
         $writer->save($filePath);
 
         // Automatinis atsisiuntimas
-        return response()->download($filePath, $fileName)->deleteFileAfterSend(true);
+        return response()->json([
+            'file' => asset("storage/{$fileName}")
+        ]);
     }
 
 
