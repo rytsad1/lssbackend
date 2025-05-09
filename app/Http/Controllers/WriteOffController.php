@@ -42,7 +42,7 @@ class WriteOffController extends Controller
         $fetchedItems = Item::whereIn('id_Item', $itemsToRemove->pluck('id'))->get();
 
         // Įkeliame Excel šabloną
-        $templatePath = storage_path('app/public/nurašymo aktas tuščias.xlsx');
+        $templatePath = resource_path('excel/nurasymo_aktas_tuscias.xlsx');
         $spreadsheet = IOFactory::load($templatePath);
         $sheet = $spreadsheet->getActiveSheet();
 
