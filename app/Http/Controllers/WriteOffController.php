@@ -75,15 +75,14 @@ class WriteOffController extends Controller
         }
 
         $fileName = now()->format('Y-m-d') . '_Nurasymo_aktas.xlsx';
-        $filePath = storage_path("app/public/{$fileName}");
+        $filePath = storage_path("app/{$fileName}");
 
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer = new Xlsx($spreadsheet);
         $writer->save($filePath);
 
-        return response()->json([
-            'message' => 'Daiktai sėkmingai nurašyti',
-            'file' => asset("storage/{$fileName}")
-        ]);
+        // Automatinis atsisiuntimas
+        return response()->download($filePath, $fileName)->deleteFileAfterSend(true);
     }
+
 
 }
