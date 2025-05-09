@@ -15,7 +15,6 @@ class Premission extends Model
     protected $fillable = [
         'Name',
         'Description',
-        'fkRolePremissionid_RolePremission'
     ];
 
     public $timestamps = false;

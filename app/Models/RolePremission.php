@@ -25,8 +25,8 @@ class RolePremission extends Model
         return $this->belongsTo(Role::class, 'fkRoleid_Role');
     }
 
-    public function permission()
+    public function premission()
     {
-        return $this->belongsTo(Premission::class, 'fkPremissionid_Premission');
+        return $this->belongsTo(Premission::class, 'fkPremissionid_Premission', 'id_Premission');
     }
 }

@@ -103,4 +103,39 @@ class OrderController extends Controller
             return response()->json(['message' => 'Užsakymas pateiktas', 'order_id' => $order->id_Order], 201);
         });
     }
+    public function approve(Order $order)
+    {
+        return $this->handleOrderAction($order, 'approved', 2); // 2 - Confirmed
+    }
+
+    public function reject(Order $order)
+    {
+        return $this->handleOrderAction($order, 'rejected', 4); // 4 - Rejected
+    }
+
+    protected function handleOrderAction(Order $order, string $action, int $statusId)
+    {
+        $user = Auth::guard('api')->user();
+
+        if ($order->fkOrderStatusid_OrderStatus !== 3) { // 3 = Waiting
+            return response()->json(['message' => 'Užsakymas jau buvo apdorotas.'], 400);
+        }
+
+        return DB::transaction(function () use ($order, $action, $statusId, $user) {
+            // Atnaujinam užsakymo statusą
+            $order->fkOrderStatusid_OrderStatus = $statusId;
+            $order->save();
+
+            // Sukuriam OrderHistory įrašą
+            OrderHistory::create([
+                'Date' => now(),
+                'fkOrderid_Order' => $order->id_Order,
+                'PerformedByUserid' => $user->id_User,
+                'Action' => $action,
+                'Comment' => $action === 'approved' ? 'Užsakymas patvirtintas' : 'Užsakymas atmestas',
+            ]);
+
+            return response()->json(['message' => "Užsakymas $action."]);
+        });
+    }
 }

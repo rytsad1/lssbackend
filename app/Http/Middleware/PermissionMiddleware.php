@@ -16,10 +16,20 @@ class PermissionMiddleware
             return response()->json(['message' => 'Neleista'], 403);
         }
 
+        // Pakraunami visi reikalingi ryšiai
+        $user->load('userRoles.role.rolePermissions.premission');
+
+        // Surenkami leidimai iš visų naudotojo rolių
         $permissions = $user->userRoles
-            ->filter(fn($ur) => $ur->role && $ur->role->rolePermissions)
-            ->flatMap(fn($ur) => $ur->role->rolePermissions->pluck('permission.Name')) // arba 'Key'
+            ->flatMap(function ($userRole) {
+                return $userRole->role->rolePermissions
+                    ->map(fn($rp) => $rp->premission->Name ?? null);
+            })
+            ->filter()
             ->unique();
+
+        // Debug
+        // dd($permissions); // gali įjungti testavimui
 
         if ($permissions->contains('everything') || $permissions->contains($requiredPermission)) {
             return $next($request);

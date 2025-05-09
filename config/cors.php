@@ -6,6 +6,7 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
+        'http://localhost:8080',
         'https://kind-wave-01af1f310.6.azurestaticapps.net',
     ],
 
