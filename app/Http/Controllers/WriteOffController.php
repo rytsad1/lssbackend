@@ -2,33 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
 use App\Models\Item;
-use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Collection;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-
-
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class WriteOffController extends Controller
 {
-    public function preview(Request $request)
-    {
-        $validated = $request->validate([
-            'item_ids' => 'required|array',
-            'item_ids.*' => 'integer|exists:item,id_Item',
-        ]);
-
-        $items = Item::whereIn('id_Item', $validated['item_ids'])->get();
-        return response()->json($items);
-    }
-
     public function confirm(Request $request)
     {
         $validated = $request->validate([
@@ -41,7 +21,6 @@ class WriteOffController extends Controller
         $itemsToRemove = collect($validated['items']);
         $fetchedItems = Item::whereIn('id_Item', $itemsToRemove->pluck('id'))->get();
 
-        // Įkeliame Excel šabloną
         $templatePath = resource_path('excel/nurasymo_aktas_tuscias.xlsx');
         $spreadsheet = IOFactory::load($templatePath);
         $sheet = $spreadsheet->getActiveSheet();
@@ -63,7 +42,6 @@ class WriteOffController extends Controller
             $sheet->setCellValue("F{$currentRow}", $writeOffQty);
             $sheet->setCellValue("G{$currentRow}", $total);
 
-            // Atnaujinam likutį
             if ($item->Quantity <= $writeOffQty) {
                 $item->delete();
             } else {
@@ -74,17 +52,15 @@ class WriteOffController extends Controller
             $currentRow++;
         }
 
-        $fileName = now()->format('Y-m-d') . '_Nurasymo_aktas.xlsx';
-        $filePath = storage_path("app/{$fileName}");
+        // Įrašom į storage/app/public
+        $fileName = now()->format('Y-m-d') . '_nurasymo_aktas.xlsx';
+        $filePath = storage_path("app/public/{$fileName}");
 
         $writer = new Xlsx($spreadsheet);
         $writer->save($filePath);
 
-        // Automatinis atsisiuntimas
         return response()->json([
             'file' => asset("storage/{$fileName}")
         ]);
     }
-
-
 }
