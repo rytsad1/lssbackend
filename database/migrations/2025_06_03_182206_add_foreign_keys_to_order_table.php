@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::table('order', function (Blueprint $table) {
             $table->foreign(['State'], 'order_ibfk_1')->references(['id_OrderStatus'])->on('orderstatus')->onUpdate('restrict')->onDelete('restrict');
             $table->foreign(['Type'], 'order_ibfk_2')->references(['id_OrderType'])->on('ordertype')->onUpdate('restrict')->onDelete('restrict');
-            $table->foreign(['fkOrderHistoryid_OrderHistory'], 'order_ibfk_3')->references(['id_OrderHistory'])->on('orderhistory')->onUpdate('restrict')->onDelete('restrict');
             $table->foreign(['fkUserid_User'], 'order_ibfk_4')->references(['id_User'])->on('user')->onUpdate('restrict')->onDelete('restrict');
             $table->foreign(['fkOrderStatusid_OrderStatus'], 'order_ibfk_status')->references(['id_OrderStatus'])->on('orderstatus')->onUpdate('restrict')->onDelete('restrict');
             $table->foreign(['fkOrderTypeid_OrderType'], 'order_ibfk_type')->references(['id_OrderType'])->on('ordertype')->onUpdate('restrict')->onDelete('restrict');
@@ -29,7 +28,6 @@ return new class extends Migration
         Schema::table('order', function (Blueprint $table) {
             $table->dropForeign('order_ibfk_1');
             $table->dropForeign('order_ibfk_2');
-            $table->dropForeign('order_ibfk_3');
             $table->dropForeign('order_ibfk_4');
             $table->dropForeign('order_ibfk_status');
             $table->dropForeign('order_ibfk_type');

@@ -7,13 +7,26 @@ use Illuminate\Http\Request;
 use App\Http\Resources\OrderHistoryResource;
 use App\Http\Requests\OrderHistory\CreateRequest;
 use App\Http\Requests\OrderHistory\UpdateRequest;
+use Illuminate\Support\Facades\Auth;
 
 class OrderHistoryController extends Controller
 {
     public function index()
     {
+        $user = Auth::guard('api')->user();
+
+        if ($user->isWarehouseManager()) {
+            return OrderHistoryResource::collection(
+                OrderHistory::with(['order.orderItems.item', 'order.user', 'order.orderType', 'order.orderStatus', 'performedBy'])->get()
+            );
+        }
+
         return OrderHistoryResource::collection(
-            OrderHistory::with(['order.orderItems.item', 'order.user', 'order.orderType', 'performedBy'])->get()
+            OrderHistory::with(['order.orderItems.item', 'order.user', 'order.orderType', 'order.orderStatus', 'performedBy'])
+                ->whereHas('order', function ($query) use ($user) {
+                    $query->where('fkUserid_User', $user->id_User);
+                })
+                ->get()
         );
     }
 

@@ -18,6 +18,7 @@ class UserResource extends JsonResource
             "Email" => $this->Email,
             "Username" => $this->Username,
             "State" => $this->State,
+            "isWarehouseManager" => $this->isWarehouseManager(),
             "user_roles" => $this->userRoles->map(function ($ur) {
                 return [
                     'id_UserRole' => $ur->id_UserRole,

@@ -20,12 +20,13 @@ Route::prefix('v1')->group(function () {
     Route::post('/login', [UserController::class, 'login'])->name('login')->middleware(JsonFormat::class);
     Route::post('/refresh', [UserController::class, 'refreshToken']);
     Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:api');
+    Route::get('/me', [UserController::class, 'me'])->middleware('auth:api');;
 
     Route::middleware(['auth:api'])->group(function () {
 
         //Naudotojų valdymas
         //Route::get('/users', [UserController::class, 'index'])->middleware( JsonFormat::class);
-        Route::get('/users', [UserController::class, 'index'])->middleware(['json', 'permission:view-users']);
+        Route::get('/users', [UserController::class, 'index'])->middleware(['json', 'permission:view-user']);
         Route::get('/users/{user}', [UserController::class, 'show'])->middleware(['json', 'permission:manage-users']);
         Route::put('/users/{user}', [UserController::class, 'update'])->middleware(['json', 'permission:manage-users']);
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->middleware(['json', 'permission:manage-users']);
@@ -71,6 +72,11 @@ Route::prefix('v1')->group(function () {
 
         // Užsakymų istorija
         Route::get('/orderhistory', [OrderHistoryController::class, 'index'])->middleware(['json', 'permission:view-inventory']);
+
+        // Laikino išdavimo žurnalas
+        Route::get('/temporary-issues', [OrderController::class, 'userTemporaryIssues'])->middleware(['json', 'permission:view-inventory']);
+        Route::post('/temporary-issues/{id}/return', [OrderController::class, 'returnIssuedItem'])->middleware(['json', 'permission:create-order']);
+
 
     });
 });

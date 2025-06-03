@@ -13,6 +13,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Illuminate\Support\Facades\Auth;
+
 
 class UserController extends Controller
 {
@@ -189,5 +191,16 @@ class UserController extends Controller
 
         $user->userRoles()->where('fkRoleid_Role', $validated['role_id'])->delete();
         return response()->json(['message' => 'Rolė pašalinta']);
+    }
+    public function me()
+    {
+        $user = Auth::guard('api')->user()->fresh();
+
+        return response()->json([
+            'id_User' => $user->id_User,
+            'name' => $user->Name,
+            'email' => $user->Email,
+            'isWarehouseManager' => $user->isWarehouseManager(),
+        ]);
     }
 }

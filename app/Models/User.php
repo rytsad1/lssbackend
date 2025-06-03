@@ -53,6 +53,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(OrderHistory::class, 'fkOrderHistoryid_OrderHistory', 'id_OrderHistory');
     }
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'userrole', 'fkUserid_User', 'fkRoleid_Role');
+    }
 
     public function state()
     {
@@ -80,6 +84,12 @@ class User extends Authenticatable implements JWTSubject
             $this->attributes['Password'] = $value;
         }
     }
+    public function isWarehouseManager(): bool
+    {
+        return $this->roles()->whereIn('Name', ['Sandėlininkas'])->exists();
+
+    }
+
 
 
 }
