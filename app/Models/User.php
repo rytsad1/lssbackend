@@ -5,6 +5,7 @@ namespace App\Models;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements JWTSubject
@@ -61,10 +62,23 @@ class User extends Authenticatable implements JWTSubject
 
     public function hasPermission(string $key): bool
     {
-        return $this->userRoles
-                ->flatMap(fn($role) => $role->role->rolePermissions)
-                ->pluck('permission.key')
-                ->contains($key) || $this->hasPermission('everything');
+        $permissions = $this->userRoles
+            ->flatMap(fn($role) => $role->role->rolePermissions)
+            ->pluck('premission.Name')
+            ->map(fn($p) => strtolower($p))
+            ->unique();
+
+        return $permissions->contains('everything') || $permissions->contains(strtolower($key));
+    }
+
+
+    public function setPasswordAttribute($value)
+    {
+        if ($value && Hash::needsRehash($value)) {
+            $this->attributes['Password'] = bcrypt($value);
+        } else {
+            $this->attributes['Password'] = $value;
+        }
     }
 
 

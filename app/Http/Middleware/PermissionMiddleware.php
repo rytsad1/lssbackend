@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class PermissionMiddleware
 {
@@ -13,28 +14,25 @@ class PermissionMiddleware
         $user = Auth::guard('api')->user();
 
         if (!$user) {
-            return response()->json(['message' => 'Neleista'], 403);
+            return response()->json(['message' => 'Neleista – neprisijungęs naudotojas.'], 403);
         }
 
-        // Pakraunami visi reikalingi ryšiai
-        $user->load('userRoles.role.rolePermissions.premission');
+        $user->loadMissing('userRoles.role.rolePermissions.permission');
 
-        // Surenkami leidimai iš visų naudotojo rolių
         $permissions = $user->userRoles
             ->flatMap(function ($userRole) {
-                return $userRole->role->rolePermissions
-                    ->map(fn($rp) => $rp->premission->Name ?? null);
+                return optional(optional($userRole->role)->rolePermissions)->map(function ($rp) {
+                    return optional($rp->permission)->Name;
+                });
             })
             ->filter()
+            ->map(fn($p) => strtolower(trim($p)))
             ->unique();
 
-        // Debug
-        // dd($permissions); // gali įjungti testavimui
-
-        if ($permissions->contains('everything') || $permissions->contains($requiredPermission)) {
+        if ($permissions->contains('everything') || $permissions->contains(strtolower($requiredPermission))) {
             return $next($request);
         }
 
-        return response()->json(['message' => 'Prieiga uždrausta'], 403);
+        return response()->json(['message' => 'Prieiga uždrausta – neturite reikiamos teisės.'], 403);
     }
 }

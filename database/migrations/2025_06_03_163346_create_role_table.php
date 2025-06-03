@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('Description')->nullable();
             $table->integer('id_Role', true);
             $table->integer('fkUserRoleid_UserRole')->nullable()->index('fkuserroleid_userrole');
-            $table->integer('fkRolePremissionid_RolePremission')->nullable()->unique('fkrolepremissionid_rolepremission');
         });
     }
 

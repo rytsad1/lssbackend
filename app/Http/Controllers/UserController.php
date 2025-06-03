@@ -20,12 +20,19 @@ class UserController extends Controller
     {
         try {
             $user = JWTAuth::parseToken()->authenticate();
+
+            // Pakraunami visi naudotojai su jų rolių ir teisių informacija
+            $users = User::with('userRoles.role.rolePermissions.permission')->get();
+
             return response()->json([
                 'authenticated_user' => $user,
-                'data' => UserResource::collection(User::all())
+                'data' => UserResource::collection($users)
             ]);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Tokenas netinkamas arba neprisijungta', 'error' => $e->getMessage()], 401);
+            return response()->json([
+                'message' => 'Tokenas netinkamas arba neprisijungta',
+                'error' => $e->getMessage()
+            ], 401);
         }
     }
 
@@ -42,47 +49,40 @@ class UserController extends Controller
 
     public function store(CreateRequest $request)
     {
-        $data = $request->all(); // paimk duomenis PO hash'inimo
-
+        $data = $request->validated();
         $data['State'] = $request->input('State', 1);
         $user = User::create($data);
 
-        // Priskiriama rolė ir teisės, jei pateikta
-        if ($request->has('role_id')) {
-            $userRole = $user->userRoles()->create(['fkRoleid_Role' => $request->role_id]);
+        $roleIds = $request->input('RoleIds', []); // Dabar priimame kelias roles
 
-            if ($request->has('permissions')) {
-                foreach ($request->permissions as $permissionId) {
-                    $userRole->role->rolePermissions()->create(['fkPermissionid_Premission' => $permissionId]);
-                }
-            }
+        foreach ($roleIds as $roleId) {
+            $user->userRoles()->create(['fkRoleid_Role' => $roleId]);
         }
 
-        return response(new UserResource($user), 201);
+        return response(new UserResource($user->load('userRoles.role.rolePermissions.permission')), 201);
     }
+
+
 
 
     public function update(UpdateRequest $request, User $user)
     {
         $user->update($request->validated());
 
-        // Jei pateikta nauja rolė – pašalinti seną ir priskirti naują
-        if ($request->has('role_id')) {
-            $user->userRoles()->delete();
-            $userRole = $user->userRoles()->create(['fkRoleid_Role' => $request->role_id]);
+        $roleIds = $request->input('RoleIds', []);
 
-            // Perrašom teises
-            $userRole->role->rolePermissions()->delete();
+        // Ištrinam visas roles
+        $user->userRoles()->delete();
 
-            if ($request->has('permissions')) {
-                foreach ($request->permissions as $permissionId) {
-                    $userRole->role->rolePermissions()->create(['fkPermissionid_Premission' => $permissionId]);
-                }
-            }
+        // Priskiriam iš naujo
+        foreach ($roleIds as $roleId) {
+            $user->userRoles()->create(['fkRoleid_Role' => $roleId]);
         }
 
-        return response(new UserResource($user), 200);
+        return response(new UserResource($user->load('userRoles.role.rolePermissions.permission')), 200);
     }
+
+
 
     public function destroy(User $user)
     {

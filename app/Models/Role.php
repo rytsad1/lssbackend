@@ -15,12 +15,9 @@ class Role extends Model
     protected $fillable = [
         'Name',
         'Description',
-        'fkUserRoleid_UserRole',
-        'fkRolePremissionid_RolePremission',
     ];
 
     public $timestamps = false;
-    public $incrementing = true;
 
     public function userRoles()
     {
@@ -29,8 +26,19 @@ class Role extends Model
 
     public function rolePermissions()
     {
-        return $this->hasMany(RolePremission::class, 'fkRoleid_Role', 'id_Role');
+        return $this->hasMany(RolePremission::class, 'fk_Role', 'id_Role');
+    }
+
+    public function permissions()
+    {
+        return $this->hasManyThrough(
+            Premission::class,
+            RolePremission::class,
+            'fk_Role',       // Foreign key RolePremission -> Role
+            'id_Premission', // Local key Premission
+            'id_Role',       // Local key Role
+            'fk_Permission'  // Foreign key RolePremission -> Premission
+        );
     }
 
 }
-

@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::table('role', function (Blueprint $table) {
             $table->foreign(['fkUserRoleid_UserRole'], 'role_ibfk_1')->references(['id_UserRole'])->on('userrole')->onUpdate('restrict')->onDelete('restrict');
-            $table->foreign(['fkRolePremissionid_RolePremission'], 'role_ibfk_2')->references(['id_RolePremission'])->on('rolepremission')->onUpdate('restrict')->onDelete('restrict');
         });
     }
 
@@ -24,7 +23,6 @@ return new class extends Migration
     {
         Schema::table('role', function (Blueprint $table) {
             $table->dropForeign('role_ibfk_1');
-            $table->dropForeign('role_ibfk_2');
         });
     }
 };

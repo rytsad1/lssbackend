@@ -34,6 +34,8 @@ class UpdateRequest extends FormRequest
             'role_id' => ['nullable|exists:role,id_Role'],
             'permissions' => ['nullable|array'],
             'permissions.*' => ['integer|exists:premission,id_Premission'],
+            'RoleIds' => ['required', 'array'],
+            'RoleIds.*' => ['exists:role,id_Role'],
         ];
     }
 
@@ -57,12 +59,12 @@ class UpdateRequest extends FormRequest
         // šiuo metu nedarome automatinio laukų pašalinimo
     }
 
-    protected function passedValidation(): void
-    {
-        if ($this->filled('Password')) {
-            $this->merge([
-                'Password' => Hash::make($this->Password)
-            ]);
-        }
-    }
+//    protected function passedValidation(): void
+//    {
+//        if ($this->filled('Password')) {
+//            $this->merge([
+//                'Password' => Hash::make($this->Password)
+//            ]);
+//        }
+//    }
 }

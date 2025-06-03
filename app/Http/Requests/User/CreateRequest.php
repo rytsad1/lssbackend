@@ -32,6 +32,8 @@ class CreateRequest extends FormRequest
             'permissions' => ['nullable', 'array'],
             'permissions.*' => ['integer', 'exists:premission,id_Premission'],
             'State' => ['nullable', 'integer'],
+            'RoleIds' => ['required', 'array'],
+            'RoleIds.*' => ['exists:role,id_Role'],
         ];
     }
 
@@ -47,6 +49,7 @@ class CreateRequest extends FormRequest
             'Username.unique' => 'Toks vartotojo vardas jau egzistuoja.',
             'Password.required' => 'Slaptažodis privalomas.',
             'Password.confirmed' => 'Slaptažodžiai nesutampa.',
+
         ];
     }
 
@@ -55,11 +58,11 @@ class CreateRequest extends FormRequest
         throw new HttpResponseException(response()->json($validator->errors(), 422));
     }
 
-    protected function passedValidation(): void
-    {
-        $data = $this->all();
-        $data['Password'] = Hash::make($data['Password']);
-        $this->replace($data);
-    }
+//    protected function passedValidation(): void
+//    {
+//        $data = $this->all();
+//        $data['Password'] = Hash::make($data['Password']);
+//        $this->replace($data);
+//    }
 
 }

@@ -22,6 +22,6 @@ class Premission extends Model
 
     public function rolePermissions()
     {
-        return $this->hasMany(RolePremission::class, 'fkPremissionid_Premission');
+        return $this->hasMany(RolePremission::class, 'fk_Permission', 'id_Premission');
     }
 }

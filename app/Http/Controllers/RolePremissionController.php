@@ -2,41 +2,43 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\RolePremission;
 use Illuminate\Http\Request;
-use App\Http\Resources\RolePremissionResource;
-use App\Http\Requests\RolePremission\CreateRequest;
-use App\Http\Requests\RolePremission\UpdateRequest;
+use App\Models\Premission;
 
 class RolePremissionController extends Controller
 {
-    public function index()
+    // Gauti visus leidimus konkrečiai rolei
+    public function index($roleId)
     {
-        return RolePremissionResource::collection(RolePremission::all());
+        $role = Role::with('rolePermissions.permission')->findOrFail($roleId);
+        return response()->json([
+            'permissions' => $role->rolePermissions->pluck('permission')
+        ]);
     }
 
-    public function store(CreateRequest $request)
+    // Atnaujinti rolės leidimus
+    public function update(Request $request, $roleId)
     {
-        $data = $request->validated();
-        $rolePremission = RolePremission::create($data);
-        return new RolePremissionResource($rolePremission);
-    }
+        $request->validate([
+            'permission_ids' => ['required', 'array'],
+            'permission_ids.*' => ['exists:premission,id_Premission'],
+        ]);
 
-    public function show(RolePremission $rolePremission)
-    {
-        return new RolePremissionResource($rolePremission);
-    }
+        $role = Role::findOrFail($roleId);
 
-    public function update(UpdateRequest $request, RolePremission $rolePremission)
-    {
-        $rolePremission->update($request->validated());
-        return new RolePremissionResource($rolePremission);
-    }
+        // Ištrinti senus leidimus
+        RolePremission::where('fk_Role', $role->id_Role)->delete();
 
-    public function destroy(RolePremission $rolePremission)
-    {
-        $rolePremission->delete();
-        return response()->noContent();
+        // Įrašyti naujus
+        foreach ($request->permission_ids as $permId) {
+            RolePremission::create([
+                'fk_Role' => $role->id_Role,
+                'fk_Permission' => $permId,
+            ]);
+        }
+
+        return response()->json(['message' => 'Rolės leidimai atnaujinti sėkmingai.']);
     }
 }
-

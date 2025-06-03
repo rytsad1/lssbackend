@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'permission' => \App\Http\Middleware\PermissionMiddleware::class,
+            'json' => \App\Http\Middleware\JsonFormat::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

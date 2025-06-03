@@ -15,8 +15,9 @@ class RoleResource extends JsonResource
             'id_Role' => $this->id_Role,
             'Name' => $this->Name,
             'Description' => $this->Description,
-            'fkUserRoleid_UserRole' => $this->fkUserRoleid_UserRole,
-            'fkRolePremissionid_RolePremission' => $this->fkRolePremissionid_RolePremission,
+            'permissions' => $this->whenLoaded('permissions', function () {
+                return $this->permissions->pluck('id_Premission');
+            }),
         ];
     }
 }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('userrole', function (Blueprint $table) {
             $table->foreign(['fkRoleid_Role'], 'fk_userrole_role')->references(['id_Role'])->on('role')->onUpdate('restrict')->onDelete('set null');
-            $table->foreign(['fkUserid_User'], 'userrole_ibfk_1')->references(['id_User'])->on('user')->onUpdate('restrict')->onDelete('restrict');
+            $table->foreign(['fkUserid_User'], 'userrole_ibfk_1')->references(['id_User'])->on('user')->onUpdate('restrict')->onDelete('cascade');
         });
     }
 

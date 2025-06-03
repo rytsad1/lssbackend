@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Item;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Models\WriteOffLog;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class WriteOffController extends Controller
 {
@@ -27,6 +29,7 @@ class WriteOffController extends Controller
 
         $startRow = 22;
         $currentRow = $startRow;
+        $userId = JWTAuth::parseToken()->getPayload()->get('sub'); // naudotojas, kuris nurašo
 
         foreach ($fetchedItems as $item) {
             $removal = $itemsToRemove->firstWhere('id', $item->id_Item);
@@ -42,6 +45,16 @@ class WriteOffController extends Controller
             $sheet->setCellValue("F{$currentRow}", $writeOffQty);
             $sheet->setCellValue("G{$currentRow}", $total);
 
+            // Įrašome į WriteOffLog
+            WriteOffLog::create([
+                'fkItemid_Item' => $item->id_Item,
+                'Quantity' => $writeOffQty,
+                'Reason' => $reason,
+                'Date' => now()->toDateString(),
+                'HandledByUserid' => $userId
+            ]);
+
+            // Atnaujinam inventorių
             if ($item->Quantity <= $writeOffQty) {
                 $item->delete();
             } else {
@@ -52,7 +65,6 @@ class WriteOffController extends Controller
             $currentRow++;
         }
 
-        // Įrašom į storage/app/public
         $fileName = now()->format('Y-m-d') . '_nurasymo_aktas.xlsx';
         $filePath = storage_path("app/public/{$fileName}");
 
@@ -62,5 +74,10 @@ class WriteOffController extends Controller
         return response()->json([
             'file' => asset("storage/{$fileName}")
         ]);
+    }
+    public function logs()
+    {
+        $logs = WriteOffLog::with(['item', 'handledBy'])->orderBy('Date', 'desc')->get();
+        return response()->json($logs);
     }
 }
