@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('IssuedDate');
             $table->date('ReturnedDate')->nullable();
             $table->text('Comment')->nullable();
+            $table->integer('Quantity')->nullable();
         });
     }
 
