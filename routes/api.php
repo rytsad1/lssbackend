@@ -11,6 +11,8 @@ use App\Http\Controllers\UserRoleController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderTypeController;
 use App\Http\Controllers\OrderHistoryController;
+use App\Http\Controllers\BillOfLadingController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Middleware\JsonFormat;
 use App\Http\Kernel;
 use App\Http\Middleware\PermissionMiddleware;
@@ -21,6 +23,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/refresh', [UserController::class, 'refreshToken']);
     Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:api');
     Route::get('/me', [UserController::class, 'me'])->middleware('auth:api');;
+
 
     Route::middleware(['auth:api'])->group(function () {
 
@@ -44,7 +47,7 @@ Route::prefix('v1')->group(function () {
         // Nurašymas
         Route::post('/items/writeoff/preview', [WriteOffController::class, 'preview'])->middleware(['json', 'permission:writeoff-items']);
         Route::post('/items/writeoff/confirm', [WriteOffController::class, 'confirm'])->middleware(['json', 'permission:writeoff-items']);
-        Route::get('/writeoff-logs', [WriteOffController::class, 'logs'])->middleware(['json', 'permission:view-writeoffs']);
+        Route::get('/writeoff-logs', [WriteOffController::class, 'logs'])->middleware(['json', 'permission:writeoff-items']);
 
 
         // Rolių ir leidimų peržiūra
@@ -76,6 +79,17 @@ Route::prefix('v1')->group(function () {
         // Laikino išdavimo žurnalas
         Route::get('/temporary-issues', [OrderController::class, 'userTemporaryIssues'])->middleware(['json', 'permission:view-inventory']);
         Route::post('/temporary-issues/{id}/return', [OrderController::class, 'returnIssuedItem'])->middleware(['json', 'permission:create-order']);
+
+        //Route::get('/billoflading/{id}/download', [BillOfLadingController::class, 'generateBillOfLadingPdf'])->middleware(['json', 'premission:billoflading']);
+        //Route::get('/billoflading/pdf/{billId}', [BillOfLadingController::class, 'generateBillOfLadingPdf'])->middleware(['json', 'premission:billoflading']);
+        Route::get('/billoflading/{id}/download', [BillOfLadingController::class, 'generateBillOfLadingPdf'])->middleware(['json', 'permission:billoflading']);
+        Route::get('/billoflading/pdf/{billId}', [BillOfLadingController::class, 'generateBillOfLadingPdf'])->middleware(['json', 'permission:billoflading'])->name('billoflading.download');;
+        Route::post('/billoflading/create', [BillOfLadingController::class, 'store'])->middleware(['json', 'permission:billoflading']);
+
+
+
+        Route::get('/departments', [DepartmentController::class, 'index'])->middleware(['json', 'permission:view-departments']);
+
 
 
     });
