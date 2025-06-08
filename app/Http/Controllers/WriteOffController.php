@@ -72,7 +72,7 @@ class WriteOffController extends Controller
         $writer->save($filePath);
 
         return response()->json([
-            'file' => asset("storage/{$fileName}")
+            'file' => secure_asset("storage/{$fileName}")
         ]);
     }
     public function logs()
