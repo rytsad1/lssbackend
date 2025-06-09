@@ -88,7 +88,7 @@ Route::prefix('v1')->group(function () {
 
 
 
-        Route::get('/departments', [DepartmentController::class, 'index'])->middleware(['json', 'permission:view-departments']);
+        Route::get('/department', [DepartmentController::class, 'index'])->middleware(['json', 'permission:view-departments']);
 
 
 
