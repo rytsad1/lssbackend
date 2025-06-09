@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Http\Resources\OrderResource;
-use App\Http\Requests\Order\CreateRequest;
-use App\Http\Requests\Order\UpdateRequest;
 use App\Models\OrderItem;
 use App\Models\OrderHistory;
 use App\Models\Item;
@@ -22,13 +20,13 @@ class OrderController extends Controller
             'items' => 'required|array|min:1',
             'items.*.item_id' => 'required|integer|exists:item,id_Item',
             'items.*.quantity' => 'required|integer|min:1',
-            'target_user_id' => 'required_if:isWarehouse,true|exists:user,id_User',
+            'target_user_id' => 'nullable|exists:user,id_User',
             'comment' => 'nullable|string',
         ]);
 
         $user = Auth::guard('api')->user();
         $isWarehouse = $user->isWarehouseManager();
-        $targetUserId = $isWarehouse ? $validated['target_user_id'] : $user->id_User;
+        $targetUserId = $isWarehouse ? $validated['target_user_id'] ?? null : $user->id_User;
 
         return DB::transaction(function () use ($validated, $user, $isWarehouse, $targetUserId) {
             $status = $isWarehouse ? 2 : 3;
@@ -56,14 +54,16 @@ class OrderController extends Controller
                     $itemModel->Quantity -= $item['quantity'];
                     $itemModel->save();
 
-                    TemporaryIssueLog::create([
-                        'fkItemid_Item' => $item['item_id'],
-                        'fkUserid_User' => $targetUserId,
-                        'IssuedDate' => now(),
-                        'ReturnedDate' => null,
-                        'Comment' => 'Sandėlininkas išdavė daiktą',
-                        'Quantity' => $item['quantity'],
-                    ]);
+                    if ($targetUserId !== null) {
+                        TemporaryIssueLog::create([
+                            'fkItemid_Item' => $item['item_id'],
+                            'fkUserid_User' => $targetUserId,
+                            'IssuedDate' => now(),
+                            'ReturnedDate' => null,
+                            'Comment' => 'Sandėlininkas išdavė daiktą',
+                            'Quantity' => $item['quantity'],
+                        ]);
+                    }
                 }
             }
 
@@ -78,6 +78,7 @@ class OrderController extends Controller
             return response()->json(['message' => 'Užsakymas pateiktas', 'order_id' => $order->id_Order], 201);
         });
     }
+
     public function index(Request $request)
     {
         $user = Auth::guard('api')->user();
@@ -85,18 +86,16 @@ class OrderController extends Controller
         $query = Order::with(['user', 'orderHistory', 'orderType', 'orderStatus', 'orderItems.item']);
 
         if ($request->query('status') === 'waiting') {
-            // Tik sandėlininkui
             if (!$user->isWarehouseManager()) {
                 return response()->json(['message' => 'Leidimas atmestas.'], 403);
             }
-            $query->where('fkOrderStatusid_OrderStatus', 3); // Tik „Waiting“
+            $query->where('fkOrderStatusid_OrderStatus', 3);
         } elseif (!$user->isWarehouseManager()) {
-            $query->where('fkUserid_User', $user->id_User); // Tik prisijungusio naudotojo užsakymai
+            $query->where('fkUserid_User', $user->id_User);
         }
 
         return OrderResource::collection($query->get());
     }
-
 
     public function approve(Order $order)
     {
@@ -183,7 +182,7 @@ class OrderController extends Controller
 
         return DB::transaction(function () use ($log) {
             $item = $log->item;
-            $item->Quantity += $log->Quantity; // Arba naudoti kiekį, jei įrašysime kiekį vėliau
+            $item->Quantity += $log->Quantity;
             $item->save();
 
             $log->ReturnedDate = now();

@@ -76,8 +76,7 @@ class BillOfLadingController extends Controller
             return $item;
         });
 
-        $amountInWords = $this->numberToWords($items->sum(fn($i) => $i->Price * $i->Quantity));
-
+        $amountInWords = '';
         $pdf = Pdf::loadView('pdf.billoflading', compact('bill', 'sender', 'items', 'amountInWords'));
 
         $fileName = "vaztarastis_{$bill->id_BillOfLading}.pdf";
@@ -89,11 +88,7 @@ class BillOfLadingController extends Controller
 
 
 
-    private function numberToWords($number)
-    {
-        $f = new \NumberFormatter("lt", \NumberFormatter::SPELLOUT);
-        return $f->format($number);
-    }
+
     public function findByOrder($orderId)
     {
         $bill = BillOfLading::where('fkOrderid_Order', $orderId)->first();
