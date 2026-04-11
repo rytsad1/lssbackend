@@ -63,6 +63,17 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(State::class, 'State', 'id_State');
     }
 
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'fkUserid_User', 'id_User');
+    }
+
+    public function performedOrderHistories()
+    {
+        return $this->hasMany(OrderHistory::class, 'PerformedByUserid', 'id_User');
+    }
+
+
 
     public function hasPermission(string $key): bool
     {
@@ -90,6 +101,16 @@ class User extends Authenticatable implements JWTSubject
 
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->roles()->where('Name', 'Admin')->exists();
+    }
 
+    public static function adminCount(): int
+    {
+        return self::whereHas('roles', function ($q) {
+            $q->where('Name', 'Admin');
+        })->count();
+    }
 
 }

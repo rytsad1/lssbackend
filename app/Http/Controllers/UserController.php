@@ -90,12 +90,34 @@ class UserController extends Controller
     {
         $tokenUserId = JWTAuth::parseToken()->getPayload()->get('sub');
 
-        if ($user->id_User == $tokenUserId) {
-            JWTAuth::invalidate(); // jei trinamas save – išjungti token
+        if ($user->isAdmin() && User::adminCount() <= 1) {
+            return response()->json([
+                'message' => 'Negalima pašalinti paskutinio administratoriaus.'
+            ], 422);
         }
 
+        if ($user->orders()->exists()) {
+            return response()->json([
+                'message' => 'Negalima pašalinti naudotojo, nes jis turi užsakymų.'
+            ], 422);
+        }
+
+        if ($user->performedOrderHistories()->exists()) {
+            return response()->json([
+                'message' => 'Negalima pašalinti naudotojo, nes jis naudojamas užsakymų istorijoje.'
+            ], 422);
+        }
+
+        if ($user->id_User == $tokenUserId) {
+            JWTAuth::invalidate();
+        }
+
+        $user->userRoles()->delete();
         $user->delete();
-        return response('', 204);
+
+        return response()->json([
+            'message' => 'Naudotojas sėkmingai pašalintas.'
+        ], 200);
     }
 
     public function login(LoginRequest $request)
