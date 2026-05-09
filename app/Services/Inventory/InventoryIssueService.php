@@ -19,11 +19,17 @@ class InventoryIssueService
                 ->where('item_variant_id', $data['item_variant_id'])
                 ->where('quantity_remaining', '>', 0)
 
-                // FEFO
+                // neleidžiam išduoti pasibaigusių
+                ->where(function ($q) {
+                    $q->whereNull('expiration_date')
+                        ->orWhereDate('expiration_date', '>=', now());
+                })
+
+                // FEFO — pirma tos, kurios greičiau baigsis
                 ->orderByRaw('expiration_date IS NULL')
                 ->orderBy('expiration_date')
 
-                // FIFO
+                // FIFO fallback — anksčiau gautos pirma
                 ->orderBy('received_date')
 
                 ->lockForUpdate()
