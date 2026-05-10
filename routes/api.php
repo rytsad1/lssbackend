@@ -26,6 +26,7 @@ use App\Http\Controllers\Inventory\AssetUnitController;
 use App\Http\Controllers\Inventory\InventoryMovementController;
 use App\Http\Controllers\Inventory\InventoryIssueController;
 use App\Http\Controllers\Inventory\InventoryStockController;
+use App\Http\Controllers\Inventory\InventoryReturnController;
 
 Route::prefix('v1')->group(function () {
     //Route::post('/register', [UserController::class, 'register'])->middleware(JsonFormat::class);
@@ -143,8 +144,10 @@ Route::prefix('v2')->middleware(['auth:api'])->group(function () {
         Route::post('/import/preview', [InventoryImportController::class, 'preview'])->middleware(['json', 'permission:import-items']);
         Route::post('/import/confirm', [InventoryImportController::class, 'confirm'])->middleware(['json', 'permission:import-items']);
         Route::post('/issue', [InventoryIssueController::class, 'store'])->middleware(['json', 'permission:create-order']);
+        Route::post('/return', [InventoryReturnController::class, 'store'])->middleware(['json', 'permission:create-order']);
 
         Route::get('/stock', [InventoryStockController::class, 'index'])->middleware(['json', 'permission:view-inventory']);
         Route::get('/stock/{variant}', [InventoryStockController::class, 'show'])->middleware(['json', 'permission:view-inventory']);
+
     });
 });
