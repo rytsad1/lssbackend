@@ -27,6 +27,11 @@ use App\Http\Controllers\Inventory\InventoryMovementController;
 use App\Http\Controllers\Inventory\InventoryIssueController;
 use App\Http\Controllers\Inventory\InventoryStockController;
 use App\Http\Controllers\Inventory\InventoryReturnController;
+use App\Http\Controllers\Inventory\InventoryWriteOffController;
+use App\Http\Controllers\Inventory\UserMeasurementController;
+use App\Http\Controllers\Inventory\KitTemplateController;
+use App\Http\Controllers\Inventory\KitTemplateItemController;
+use App\Http\Controllers\Inventory\KitAssignmentController;
 
 Route::prefix('v1')->group(function () {
     //Route::post('/register', [UserController::class, 'register'])->middleware(JsonFormat::class);
@@ -148,6 +153,30 @@ Route::prefix('v2')->middleware(['auth:api'])->group(function () {
 
         Route::get('/stock', [InventoryStockController::class, 'index'])->middleware(['json', 'permission:view-inventory']);
         Route::get('/stock/{variant}', [InventoryStockController::class, 'show'])->middleware(['json', 'permission:view-inventory']);
+
+        Route::post('/writeoff', [InventoryWriteOffController::class, 'quantity'])->middleware(['json', 'permission:writeoff-items']);
+        Route::post('/writeoff/asset', [InventoryWriteOffController::class, 'asset'])->middleware(['json', 'permission:writeoff-items']);
+
+        // Nario dydžiai (komplektavimui)
+        Route::get('/users/{user}/measurements', [UserMeasurementController::class, 'show'])->middleware(['json', 'permission:view-inventory']);
+        Route::put('/users/{user}/measurements', [UserMeasurementController::class, 'upsert'])->middleware(['json', 'permission:manage-users']);
+        Route::delete('/users/{user}/measurements', [UserMeasurementController::class, 'destroy'])->middleware(['json', 'permission:manage-users']);
+
+        // Kit Templates (komplektų šablonai)
+        Route::get('/kits', [KitTemplateController::class, 'index'])->middleware(['json', 'permission:view-inventory']);
+        Route::post('/kits', [KitTemplateController::class, 'store'])->middleware(['json', 'permission:add-item']);
+        Route::get('/kits/{kit_template}', [KitTemplateController::class, 'show'])->middleware(['json', 'permission:view-inventory']);
+        Route::put('/kits/{kit_template}', [KitTemplateController::class, 'update'])->middleware(['json', 'permission:add-item']);
+        Route::delete('/kits/{kit_template}', [KitTemplateController::class, 'destroy'])->middleware(['json', 'permission:add-item']);
+
+// Kit Items (komplekto elementai)
+        Route::post('/kits/{kit_template}/items', [KitTemplateItemController::class, 'store'])->middleware(['json', 'permission:add-item']);
+        Route::put('/kits/{kit_template}/items/{kit_item}', [KitTemplateItemController::class, 'update'])->middleware(['json', 'permission:add-item']);
+        Route::delete('/kits/{kit_template}/items/{kit_item}', [KitTemplateItemController::class, 'destroy'])->middleware(['json', 'permission:add-item']);
+
+        // Kit Assignment (komplektavimas)
+        Route::post('/kit-assignments/preview', [KitAssignmentController::class, 'preview'])->middleware(['json', 'permission:create-order']);
+        Route::post('/kit-assignments/confirm', [KitAssignmentController::class, 'confirm'])->middleware(['json', 'permission:create-order']);
 
     });
 });

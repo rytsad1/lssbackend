@@ -36,10 +36,11 @@ class InventoryWriteOffService
                     $q->whereNull('expiration_date')
                         ->orWhereDate('expiration_date', '>=', now());
                 });
-            } else {
-                // expired pirma — kad nurašytume būtent juos
-                $query->orderByRaw('expiration_date IS NULL');
-                $query->orderBy('expiration_date');
+            }
+
+            if ($writeoffType === 'expired') {
+                // pirma nurašom būtent pasibaigusias partijas
+                $query->orderByRaw('CASE WHEN expiration_date IS NOT NULL AND expiration_date < CURDATE() THEN 0 ELSE 1 END');
             }
 
             $batches = $query
